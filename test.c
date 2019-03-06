@@ -15,27 +15,34 @@ main(int argc, char *argv[])
 
     while ((nread = getline(&line, &len, stdin)) != -1) {
 
+        //exit
         if(strcmp(line, "exit\n") == 0){
             exit(EXIT_SUCCESS);
         }
 
+        //fork
         int child = fork();
 
+        //argument array
         char *arg[3];
-
         int counter = 0;
+
+        //split up getline by space and remove \n character
         char * split = strtok(line, "\n ");
         
-
+        //put the space seprated arguments into the array
         while(counter <= 3&& split != NULL){
             arg[counter] = strdup(split);
-            //printf("%s", split);
             split = strtok (NULL, "\n ");
             counter++;
         }
+
+        //append NULL to signify end of array
         arg[counter] = NULL;
 
         if(child == 0){
+
+            //launch with argument array
             execv(arg[0], arg);
         }
         else{
