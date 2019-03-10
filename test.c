@@ -15,42 +15,56 @@ main(int argc, char *argv[])
 
     while ((nread = getline(&line, &len, stdin)) != -1) {
 
+        
         //exit
         if(strcmp(line, "exit\n") == 0){
-            exit(EXIT_SUCCESS);
+           exit(EXIT_SUCCESS);
         }
 
-        //fork
-        int child = fork();
-
-        //argument array
-        char *arg[3];
-        int counter = 0;
-
-        //split up getline by space and remove \n character
-        char * split = strtok(line, "\n ");
+        char *commandTok = strtok(line, "&\n");
+        char **commandArr = malloc(sizeof(char*));
         
-        //put the space seprated arguments into the array
-        while(counter <= 3&& split != NULL){
-            arg[counter] = strdup(split);
-            split = strtok (NULL, "\n ");
-            counter++;
+        int commandCount = 0;
+        while(commandTok != NULL){
+            commandCount++;
+            commandArr = realloc(commandArr,commandCount*sizeof(char*));
+            commandArr[commandCount-1] = commandTok;
+            printf("%d:%s\n",commandCount-1,commandTok);
+            commandTok = strtok(NULL,"&\n");
         }
 
-        //append NULL to signify end of array
-        arg[counter] = NULL;
+        int procressCount = 0;
+        //printf("commandCount:%d\n", commandCount);
+        for(int i = 0; i < commandCount; i++){
+            int child = fork();
+            if(child == 0){
+                printf("procress %d\n", procressCount);
+                //printf("content: %s\n", commandArr[procressCount]);
+                char *whole = commandArr[procressCount];
+                char **arg = malloc(sizeof(char*));
+                char *argTok = strtok(whole," ");
+                int currindex = 0;
+                while(argTok != NULL){
+                    arg[currindex] = argTok;
+                    printf("arg %d: %s\n", currindex, argTok);
+                    currindex++;
+                    arg = realloc(arg, (currindex+1) * sizeof(char*));
+                    argTok = strtok(NULL, " ");
+                }
+                arg[currindex] = NULL;
+                exit(0);
+            }
+            else{
 
-        if(child == 0){
+                procressCount++;
+            }
+        }
 
-            //launch with argument array
-            execv(arg[0], arg);
+        for(int i=0; i < commandCount; i++){
+            wait(NULL);
         }
-        else{
-            int wc = wait(NULL);
-        }
-        
-        
-   }
+    }
+
 
     free(line);
     fclose(stream);
