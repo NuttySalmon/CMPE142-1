@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 void tst_error()
 {
@@ -54,9 +56,11 @@ counter = 0;
  while(a[counter] != NULL)
 {
     snprintf(path, 511, a[counter]);
-    if (access(path, X_OK) == 0) 
+    snprintf(wholename,511,"%s/ls", path);
+    if (access(wholename, X_OK) == 0) // access(?) execv(?)
     {
         //realloc(b, size);
+        execv(wholename);
         b[bcount] = a[counter];
         bcount++;
     }
@@ -64,7 +68,6 @@ counter = 0;
 }
  return b;
 }
-
 
 int
 main(int argc, char *argv[])
