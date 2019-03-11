@@ -75,6 +75,7 @@ main(int argc, char *argv[])
     ssize_t nread;
     const char *path = "./";
 
+    printf(">>");
 
     while ((nread = getline(&line, &len, stdin)) != -1) {
 
@@ -101,7 +102,7 @@ main(int argc, char *argv[])
         for(int i = 0; i < commandCount; i++){
             int child = fork();
             if(child == 0){
-                printf("procress %d\n", procressCount);
+                //printf("procress %d\n", procressCount);
                 //printf("content: %s\n", commandArr[procressCount]);
                 char *whole = commandArr[procressCount];
                 char **arg = malloc(sizeof(char*));
@@ -109,7 +110,7 @@ main(int argc, char *argv[])
                 int currindex = 0;
                 while(argTok != NULL){
                     arg[currindex] = argTok;
-                    printf("arg %d: %s\n", currindex, argTok);
+                    printf("%d - arg %d: %s\n", getpid(), currindex, argTok);
                     currindex++;
                     arg = realloc(arg, (currindex+1) * sizeof(char*));
                     argTok = strtok(NULL, " ");
@@ -126,6 +127,8 @@ main(int argc, char *argv[])
         for(int i=0; i < commandCount; i++){
             wait(NULL);
         }
+        
+    printf(">>");
     }
 
 
