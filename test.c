@@ -15,7 +15,7 @@ void tst_error()
 int changeDir(char** comand)
 {
     char* cdCommand = "cd";
-    if(strcmp(comand[0], cdCommand) == 1)
+    if(strcmp(comand[0], cdCommand) == 1) 
     {
         if(comand[1] != NULL && comand[2] == NULL)
         {
@@ -34,40 +34,64 @@ void printDirectory()
     printf("\nDir: %s", dir);
 }
 
+
+
 char * tst_path(char *a[])
 {
- char path[512];
- char wholename[512];
- char *next_piece;
- int counter = 0;
- int size = 0;
- int bcount = 0;
- 
- //b = malloc(size, sizeof(string));
+    char path[512];
+    char wholename[512];
+    char *next_piece;
+    int counter = 0;
+    int size = 0;
+    int bcount = 0;
+     
+    //b = malloc(size, sizeof(string));
 
-while(a[counter] != NULL)
-{
-    counter++;
-}
-size = counter;
-char *b[size];
-counter = 0;
-
- while(a[counter] != NULL)
-{
-    snprintf(path, 511, a[counter]);
-    snprintf(wholename,511,"%s/ls", path);
-    if (access(wholename, X_OK) == 0) // access(?) execv(?)
+    while(a[counter] != NULL)
     {
-        //realloc(b, size);
-        //execv(wholename);
-        b[bcount] = a[counter];
-        bcount++;
+        counter++;
     }
-    counter++; 
+    size = counter;
+    char *b[size];
+    counter = 0;
+
+     while(a[counter] != NULL)
+    {
+        snprintf(path, 511, a[counter]);
+        snprintf(wholename,511,"%s/ls", path);
+        if (access(wholename, X_OK) == 0) // access(?) execv(?)
+        {
+            //realloc(b, size);
+            //execv(wholename);
+            b[bcount] = a[counter];
+            bcount++;
+        }
+        counter++; 
+    }
+     return b; //should return char** which is array of strings
 }
- return b;
+
+
+char** split(char* orig, char* delim, int* counter){
+    char **arr = malloc(sizeof(char*));
+    char *tok = strtok(orig, delim); //parse arguments
+    int currindex = 0;
+
+    //traverse token 
+    while(tok != NULL){
+        arr[currindex] = tok;
+        // printf("%d - arg %d: %s\n", getpid(), currindex, argTok);
+        currindex++;
+        arr = realloc(arr, (currindex+1) * sizeof(char*));
+        tok = strtok(NULL, delim);
+    }
+    
+    arr[currindex] = NULL;
+    if (counter != NULL)
+        *counter = currindex;
+    return arr;
 }
+
 
 int
 main(int argc, char *argv[])
@@ -82,7 +106,8 @@ main(int argc, char *argv[])
     path[1] = "/bin";
     path[2] = NULL;
 
-    printf(">>");
+    printDirectory();
+    printf(">> ");
 
     while ((nread = getline(&line, &len, stdin)) != -1) {
 
@@ -92,21 +117,13 @@ main(int argc, char *argv[])
            exit(EXIT_SUCCESS);
         }
 
-        char *commandTok = strtok(line, "&\n");
-        char **commandArr = malloc(sizeof(char*));
-        
-        //split commands
-        int commandCount = 0;
-        while(commandTok != NULL){
-            commandCount++;
-            commandArr = realloc(commandArr,commandCount*sizeof(char*));
-            commandArr[commandCount-1] = commandTok;
-            //printf("%d:%s\n",commandCount-1,commandTok);
-            commandTok = strtok(NULL,"&\n");
-        }
 
+        int commandCount;
+        char **commandArr = split(line, "&\n", &commandCount);
+       
         int procressCount = 0;
         //printf("commandCount:%d\n", commandCount);
+        
 
         //traverse array of commands
         for(int i = 0; i < commandCount; i++){
@@ -116,34 +133,16 @@ main(int argc, char *argv[])
 
             //child procress
             if(child == 0){
-                //printf("procress %d\n", procressCount);
-                //printf("content: %s\n", commandArr[procressCount]);
-                char *whole = commandArr[procressCount];
-                char **arg = malloc(sizeof(char*));
-                char *argTok = strtok(whole," :"); //parse arguments
-                int currindex = 0;
 
-                //traverse token 
-                while(argTok != NULL){
-                    arg[currindex] = argTok;
-                    // printf("%d - arg %d: %s\n", getpid(), currindex, argTok);
-                    currindex++;
-                    arg = realloc(arg, (currindex+1) * sizeof(char*));
-                    argTok = strtok(NULL, " :");
-                }
-                arg[currindex] = NULL;
-
+                char **arg = split(commandArr[procressCount], " :", NULL);
+                printf("size: %zd", sizeof(arg)/sizeof(char*));
+               
                 if(strcmp(arg[0], "exit") == 0){
                     tst_error(); //error if did not exit because more than 0 arguments
-                    
+
                 } else if(strcmp(arg[0], "path") == 0){
 
                     //reserved for "path"
-
-                } else if(strcmp(arg[0],"cd") == 0){
-
-
-                    //reserved for "cd"
 
                 } else{
 
@@ -169,7 +168,7 @@ main(int argc, char *argv[])
                 } 
 
 
-                free(argTok);
+                free(arg);
                 exit(0);
             }
             else{
@@ -181,9 +180,10 @@ main(int argc, char *argv[])
         for(int i=0; i < commandCount; i++){
             wait(NULL);
         }
-        free(commandTok);
-        
-    printf(">>");
+        free(commandArr);
+    
+    printDirectory();
+    printf(">> ");
     }
 
 
