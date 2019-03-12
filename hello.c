@@ -3,7 +3,10 @@
 int
 main(int  argc, char *argv[])
 {	
-	//print with argument
-	printf("testing: %s %s", argv[0], argv[1]);
+	int counter = 1;
+	while (argv[counter] != NULL){
+		printf("output: %s\n", argv[counter]);
+		counter++;
+	}
 	return 0;
 }
