@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -128,15 +129,21 @@ main(int argc, char *argv[])
         //traverse array of commands
         for(int i = 0; i < commandCount; i++){
 
+            int redirCount = 0;
+            char **redir = split(commandArr[procressCount], ">", &redirCount);
+            //char * cmd = redir[0];
 
-            //fork
-            char **arg = split(commandArr[procressCount], " :", NULL);
+            printf("%d redir: %s\n", redirCount, redir[0]);
+            
+            char **arg = split(redir[0], " :\t", NULL);
 
             int child = 1;
+
             if(strcmp(arg[0], "cd") == 0){
                 changeDir(arg);           
             }
             else{
+                //fork
                  child = fork();
             }
 
@@ -144,6 +151,10 @@ main(int argc, char *argv[])
             //child procress
             if(child == 0){
 
+                if(redirCount == 2){
+                    close(STDOUT_FILENO); 
+                    open(redir[1], O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
+                }
                // printf("size: %zd", sizeof(arg)/sizeof(char*));
                
                 if(strcmp(arg[0], "exit") == 0){
@@ -175,22 +186,19 @@ main(int argc, char *argv[])
                             execv(wholename,arg);
                             free(wholename);
                             break;
-                        } else{
-                            tst_error();
                         }
                         free(wholename);
                     }
                 } 
-
-
                 free(arg);
+                free(redir);
                 exit(0);
             }
             else{
-
+                free(arg);
+                free(redir);
                 procressCount++;
             }
-
         }
 
         for(int i=0; i < commandCount; i++){
