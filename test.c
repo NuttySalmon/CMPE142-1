@@ -19,7 +19,7 @@ int changeDir(char** comand)
     {
         if(comand[1] != NULL && comand[2] == NULL)
         {
-            chdir(comand[1]);
+            chdir(comand[1]); 
             return 1;
         }
     }
@@ -106,11 +106,11 @@ main(int argc, char *argv[])
     path[1] = "/bin";
     path[2] = NULL;
 
+
     printDirectory();
     printf(">> ");
 
     while ((nread = getline(&line, &len, stdin)) != -1) {
-
         
         //exit
         if(strcmp(line, "exit\n") == 0){
@@ -120,7 +120,7 @@ main(int argc, char *argv[])
 
         int commandCount;
         char **commandArr = split(line, "&\n", &commandCount);
-       
+        
         int procressCount = 0;
         //printf("commandCount:%d\n", commandCount);
         
@@ -128,14 +128,23 @@ main(int argc, char *argv[])
         //traverse array of commands
         for(int i = 0; i < commandCount; i++){
 
+
             //fork
-            int child = fork();
+            char **arg = split(commandArr[procressCount], " :", NULL);
+
+            int child = 1;
+            if(strcmp(arg[0], "cd") == 0){
+                changeDir(arg);           
+            }
+            else{
+                 child = fork();
+            }
+
 
             //child procress
             if(child == 0){
 
-                char **arg = split(commandArr[procressCount], " :", NULL);
-                printf("size: %zd", sizeof(arg)/sizeof(char*));
+               // printf("size: %zd", sizeof(arg)/sizeof(char*));
                
                 if(strcmp(arg[0], "exit") == 0){
                     tst_error(); //error if did not exit because more than 0 arguments
@@ -143,6 +152,10 @@ main(int argc, char *argv[])
                 } else if(strcmp(arg[0], "path") == 0){
 
                     //reserved for "path"
+
+                } else if (strcmp(arg[0], "cd") == 0 ){
+
+                    tst_error();
 
                 } else{
 
@@ -162,6 +175,8 @@ main(int argc, char *argv[])
                             execv(wholename,arg);
                             free(wholename);
                             break;
+                        } else{
+                            tst_error();
                         }
                         free(wholename);
                     }
@@ -175,6 +190,7 @@ main(int argc, char *argv[])
 
                 procressCount++;
             }
+
         }
 
         for(int i=0; i < commandCount; i++){
