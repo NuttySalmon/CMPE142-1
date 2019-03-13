@@ -97,21 +97,30 @@ char** split(char* orig, char* delim, int* counter){
 int
 main(int argc, char *argv[])
 {
-    FILE *stream;
     char *line = NULL;
     size_t len = 0;
     ssize_t nread;
+    FILE* input;
     char **path = malloc(3* sizeof(char*));
 
     path[0] = "./";
     path[1] = "/bin";
     path[2] = NULL;
 
+    if(access(argv[1], R_OK) == 0){
+        //close(stdin);
+       // printf("%s", argv[1]);
+        input = fopen(argv[1], "r");
 
-    printDirectory();
-    printf(">> ");
+    } else{
+        input = stdin;
+        printDirectory();
+        printf(">> ");
 
-    while ((nread = getline(&line, &len, stdin)) != -1) {
+    }
+
+
+    while ((nread = getline(&line, &len, input)) != -1) {
         
         //exit
         if(strcmp(line, "exit\n") == 0){
@@ -133,7 +142,7 @@ main(int argc, char *argv[])
             char **redir = split(commandArr[procressCount], ">", &redirCount);
             //char * cmd = redir[0];
 
-            printf("%d redir: %s\n", redirCount, redir[0]);
+            //printf("%d redir: %s\n", redirCount, redir[0]);
             
             char **arg = split(redir[0], " :\t", NULL);
 
@@ -205,15 +214,15 @@ main(int argc, char *argv[])
             wait(NULL);
         }
         free(commandArr);
-    
-    printDirectory();
-    printf(">> ");
+        if(input == stdin){
+            printDirectory();
+            printf(">> ");
+        }
     }
 
 
     free(path);
     free(line);
-    fclose(stream);
     exit(EXIT_SUCCESS);
 }
 
