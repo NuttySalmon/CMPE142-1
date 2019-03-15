@@ -18,7 +18,7 @@ int changeDir(char** comand)
     char* cdCommand = "cd";
     if(strcmp(comand[0], cdCommand) == 0) 
     {
-        if(comand[1] != NULL && comand[2] == NULL)
+        if(comand[1] != NULL && comand[2] == NULL && access(comand[1], R_OK)==0)
         {
             chdir(comand[1]); 
             return 1;
