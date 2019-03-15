@@ -16,7 +16,7 @@ void tst_error()
 int changeDir(char** comand)
 {
     char* cdCommand = "cd";
-    if(strcmp(comand[0], cdCommand) == 1) 
+    if(strcmp(comand[0], cdCommand) == 0) 
     {
         if(comand[1] != NULL && comand[2] == NULL)
         {
@@ -32,7 +32,7 @@ void printDirectory()
 {
     char dir[1024];
     getcwd(dir, sizeof(dir));
-    printf("\nDir: %s", dir);
+    printf("%s", dir);
 }
 
 
