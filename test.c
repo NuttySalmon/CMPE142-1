@@ -32,7 +32,9 @@ void printDirectory()
 {
     char dir[1024];
     getcwd(dir, sizeof(dir));
+    printf("\033[01;33m");
     printf("%s", dir);
+    printf("\033[0m");
 }
 
 
@@ -115,7 +117,7 @@ main(int argc, char *argv[])
     } else{
         input = stdin;
         printDirectory();
-        printf(">> ");
+        printf(" >> ");
 
     }
 
@@ -216,7 +218,7 @@ main(int argc, char *argv[])
         free(commandArr);
         if(input == stdin){
             printDirectory();
-            printf(">> ");
+            printf(" >> ");
         }
     }
 
