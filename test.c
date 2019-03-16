@@ -23,6 +23,10 @@ int changeDir(char** comand)
             chdir(comand[1]); 
             return 1;
         }
+        else
+        {
+        	printf("Path not found : %s\n", comand[1]);
+        }
     }
     return 0;
 }
