@@ -99,6 +99,23 @@ char** split(char* orig, char* delim, int* counter){
     return arr;
 }
 
+char* removeSpaces(char* s)
+{
+    char* cpy = s;  // an alias to iterate through s without moving s
+    char* temp = s;
+
+    while (*cpy)
+    {
+        if (*cpy != ' ' && *cpy != '\t')
+            *temp++ = *cpy;
+        cpy++;
+    }
+    *temp = 0;
+
+    //printf("wo white space :%s\n", s); // This prints out the desired result: abbcccd
+    return s;
+}
+
 
 int
 main(int argc, char *argv[])
@@ -146,6 +163,9 @@ main(int argc, char *argv[])
 
             int redirCount = 0;
             char **redir = split(commandArr[procressCount], ">", &redirCount);
+            //printf("%s\n", redir[1]);
+            redir[1] = removeSpaces(redir[1]);
+            //redir[0] = redir[0].strip();
             //char * cmd = redir[0];
 
             //printf("%d redir: %s\n", redirCount, redir[0]);
