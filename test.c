@@ -164,7 +164,6 @@ main(int argc, char *argv[])
             int redirCount = 0;
             char **redir = split(commandArr[procressCount], ">", &redirCount);
             //printf("%s\n", redir[1]);
-            redir[1] = removeSpaces(redir[1]);
             //redir[0] = redir[0].strip();
             //char * cmd = redir[0];
 
@@ -187,8 +186,9 @@ main(int argc, char *argv[])
             if(child == 0){
 
                 if(redirCount == 2){
+                    char * output = removeSpaces(redir[1]);
                     close(STDOUT_FILENO); 
-                    open(redir[1], O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
+                    open(output, O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
                 }
                // printf("size: %zd", sizeof(arg)/sizeof(char*));
                
