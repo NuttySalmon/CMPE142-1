@@ -62,7 +62,7 @@ char ** tst_path(char *a[])
     char **b = malloc(sizeof(char*));
     counter = 0;
 
-     while(a[counter] != NULL)
+    while(a[counter] != NULL)
     {
         snprintf(path, 511, a[counter]);
         snprintf(wholename,511,"%s/ls", path);
@@ -75,7 +75,7 @@ char ** tst_path(char *a[])
         }
         counter++; 
     }
-     return b; //should return char** which is array of strings
+    return b; //should return char** which is array of strings
 }
 
 
@@ -124,11 +124,11 @@ main(int argc, char *argv[])
     size_t len = 0;
     ssize_t nread;
     FILE* input;
-    char **path = malloc(3* sizeof(char*));
+    char **path  = malloc(1 * sizeof(char*));
 
     path[0] = "./";
-    path[1] = "/bin";
-    path[2] = NULL;
+    //path[1] = "/bin";
+    //path[2] = NULL;
 
     if(access(argv[1], R_OK) == 0){
         //close(stdin);
@@ -150,6 +150,7 @@ main(int argc, char *argv[])
            exit(EXIT_SUCCESS);
         }
 
+        //printf("path: %s\n",path[0]);
 
         int commandCount;
         char **commandArr = split(line, "&\n", &commandCount);
@@ -175,8 +176,14 @@ main(int argc, char *argv[])
 
             if(strcmp(arg[0], "cd") == 0){
                 changeDir(arg);           
-            }
-            else{
+            
+            }else if(strcmp(arg[0], "path") == 0){
+                printf("changing path\n");
+                free(path);
+                path = tst_path(arg);
+                printf("path: %s\n",path[0]);
+
+            }else{
                 //fork
                  child = fork();
             }
@@ -194,10 +201,6 @@ main(int argc, char *argv[])
                
                 if(strcmp(arg[0], "exit") == 0){
                     tst_error(); //error if did not exit because more than 0 arguments
-
-                } else if(strcmp(arg[0], "path") == 0){
-
-                    //reserved for "path"
 
                 } else if (strcmp(arg[0], "cd") == 0 ){
 
