@@ -25,7 +25,7 @@ int changeDir(char** comand)
         }
         else
         {
-            printf("Path not found : %s\n", comand[1]);
+            printf("Directory not found : %s\n", comand[1]);
         }
     }
     return 0;
@@ -116,6 +116,15 @@ char* removeSpaces(char* s)
     return s;
 }
 
+/*
+free each element in array that is dynamically allocated
+*/
+void freeArr(char** s){
+    for(int i = 0; s[i] != NULL; i++){
+        free(s[i]);
+    }
+    free(s);
+}
 
 int
 main(int argc, char *argv[])
@@ -123,25 +132,23 @@ main(int argc, char *argv[])
     char *line = NULL;
     size_t len = 0;
     ssize_t nread;
-    FILE* input;
-    char **path  = malloc(1 * sizeof(char*));
+    FILE* input; //input source
 
-    path[0] = "./";
-    //path[1] = "/bin";
-    //path[2] = NULL;
+    char **paths  = malloc(2 * sizeof(char*));
 
+    //default paths
+    paths[0] = strdup("/bin");
+    paths[1] = NULL;
+
+    //check if batch file exists
     if(access(argv[1], R_OK) == 0){
-        //close(stdin);
-       // printf("%s", argv[1]);
         input = fopen(argv[1], "r");
-
     } else{
         input = stdin;
         printDirectory();
         printf(" >> ");
 
     }
-
 
     while ((nread = getline(&line, &len, input)) != -1) {
         
@@ -150,41 +157,30 @@ main(int argc, char *argv[])
            exit(EXIT_SUCCESS);
         }
 
-        //printf("path: %s\n",path[0]);
-
-        int commandCount;
-        char **commandArr = split(line, "&\n", &commandCount);
-        
-        int procressCount = 0;
-        //printf("commandCount:%d\n", commandCount);
-        
+        int commandCount; //number of commands
+        char **commandArr = split(line, "&\n", &commandCount); //create array of commands
+        int procressCount = 0; //number of processes called
 
         //traverse array of commands
         for(int i = 0; i < commandCount; i++){
-
             int redirCount = 0;
-            char **redir = split(commandArr[procressCount], ">", &redirCount);
-            //printf("%s\n", redir[1]);
-            //redir[0] = redir[0].strip();
-            //char * cmd = redir[0];
+            //parse redirection
+            char **redir = split(commandArr[procressCount], ">", &redirCount); 
 
-            //printf("%d redir: %s\n", redirCount, redir[0]);
+            char **arg = split(redir[0], " :\t", NULL); //create array of arg
+            int child = -1;
             
-            char **arg = split(redir[0], " :\t", NULL);
-
-            int child = 1;
-
             if(strcmp(arg[0], "cd") == 0){
-                changeDir(arg);           
-            
-            }else if(strcmp(arg[0], "path") == 0){
+                changeDir(arg);     //change directory                
+            } 
+            else if(strcmp(arg[0], "path") == 0){
                 printf("changing path\n");
-                free(path);
-                path = tst_path(arg);
-                printf("path: %s\n",path[0]);
+                freeArr(paths);
+                paths = tst_path(arg);   // change path
+                printf("path: %s\n",paths[0]);
 
-            }else{
-                //fork
+            } 
+            else{
                  child = fork();
             }
 
@@ -206,27 +202,29 @@ main(int argc, char *argv[])
 
                     tst_error();
 
-                } else{
+                } 
 
-                    //exec
-
+                //exec
+                else{
+                    
                     char* wholename;
 
                     //traverse array of paths
-                    for(int i = 0; path[i] != NULL; i++){
+                    for(int i = 0; paths[i] != NULL; i++){
 
-                        wholename = malloc(sizeof(path[i]) + sizeof(arg[0]) + 2);
-                        strcpy(wholename, path[i]);
+                        //contruct full path of exe
+                        wholename = malloc(sizeof(paths[i]) + sizeof(arg[0]) + 2);
+                        strcpy(wholename, paths[i]);
                         strcat(wholename,"/");
                         strcat(wholename, arg[0]);
 
-                        if (access(wholename, X_OK) == 0){
-                            execv(wholename,arg);
-                            free(wholename);
+                        if (access(wholename, X_OK) == 0){  //check if execeutable
+                            execv(wholename,arg);   //run
                             break;
                         }
-                        free(wholename);
+                        
                     }
+                    free(wholename);
                 } 
                 free(arg);
                 free(redir);
@@ -235,7 +233,7 @@ main(int argc, char *argv[])
             else{
                 free(arg);
                 free(redir);
-                procressCount++;
+                procressCount++; //increment no. of process called
             }
         }
 
@@ -249,8 +247,7 @@ main(int argc, char *argv[])
         }
     }
 
-
-    free(path);
+    freeArr(paths);
     free(line);
     exit(EXIT_SUCCESS);
 }
