@@ -25,7 +25,7 @@ int changeDir(char** comand)
         }
         else
         {
-        	printf("Path not found : %s\n", comand[1]);
+            printf("Path not found : %s\n", comand[1]);
         }
     }
     return 0;
@@ -43,7 +43,7 @@ void printDirectory()
 
 
 
-char * tst_path(char *a[])
+char ** tst_path(char *a[])
 {
     char path[512];
     char wholename[512];
@@ -59,7 +59,7 @@ char * tst_path(char *a[])
         counter++;
     }
     size = counter;
-    char *b[size];
+    char **b = malloc(sizeof(char*));
     counter = 0;
 
      while(a[counter] != NULL)
@@ -68,9 +68,9 @@ char * tst_path(char *a[])
         snprintf(wholename,511,"%s/ls", path);
         if (access(wholename, X_OK) == 0) // access(?) execv(?)
         {
-            //realloc(b, size);
             //execv(wholename);
             b[bcount] = a[counter];
+            b = realloc(b,(bcount+1) * sizeof(char*));
             bcount++;
         }
         counter++; 
