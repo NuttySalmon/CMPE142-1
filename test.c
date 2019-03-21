@@ -23,7 +23,11 @@ int changeDir(char** comand)
             chdir(comand[1]); 
             return 1;
         }
-        else
+        if(comand[2] != NULL || comand[1] == NULL)
+        {
+            printf("Only accept one argument.\n");
+        }
+        else if(access(comand[1], R_OK)!=0)
         {
             printf("Directory not found : %s\n", comand[1]);
         }
