@@ -140,8 +140,6 @@ main(int argc, char *argv[])
     }
 
     while ((nread = getline(&line, &len, input)) != -1) {
-        for(int i = 0; paths[i] != NULL; i++)
-           printf("%s ",paths[i]);
         //exit
         if(strcmp(line, "exit\n") == 0){
            exit(EXIT_SUCCESS);
