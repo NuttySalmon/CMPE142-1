@@ -52,37 +52,23 @@ char ** tst_path(char *a[])
 {
     char path[512];
     char wholename[512];
-    char *next_piece;
-    int counter = 0;
-    int size = 0;
+    int size = 1;
     int bcount = 0;
-     
-    //b = malloc(size, sizeof(string));
-
-    while(a[counter] != NULL)
-    {
-        counter++;
-    }
-    size = counter;
+    
     char **b = malloc(sizeof(char*));
-    counter = 0;
 
-    while(a[counter] != NULL)
+    while(a[size] != NULL)
     {
-        snprintf(path, 511, a[counter]);
-        snprintf(wholename,511,"%s/ls", path);
-        if (access(wholename, X_OK) == 0) // access(?) execv(?)
-        {
+        
             //execv(wholename);
-            b[bcount] = a[counter];
-            b = realloc(b,(bcount+1) * sizeof(char*));
+            b[bcount] = malloc(strlen(a[size])+1);
+            strcpy(b[bcount], a[size]);
             bcount++;
-        }
-        counter++; 
+            size++;
     }
+    b[bcount] = NULL;
     return b; //should return char** which is array of strings
 }
-
 
 char** split(char* orig, char* delim, int* counter){
     char **arr = malloc(sizeof(char*));
@@ -154,7 +140,8 @@ main(int argc, char *argv[])
     }
 
     while ((nread = getline(&line, &len, input)) != -1) {
-        
+        for(int i = 0; paths[i] != NULL; i++)
+           printf("%s ",paths[i]);
         //exit
         if(strcmp(line, "exit\n") == 0){
            exit(EXIT_SUCCESS);
