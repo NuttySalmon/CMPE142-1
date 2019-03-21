@@ -50,11 +50,8 @@ void printPrompt()
 
 char ** tst_path(char *a[])
 {
-    char path[512];
-    char wholename[512];
     int size = 1;
     int bcount = 0;
-    
     char **b = malloc(sizeof(char*));
 
     while(a[size] != NULL)
