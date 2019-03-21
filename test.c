@@ -32,13 +32,14 @@ int changeDir(char** comand)
 }
 
 //Function to print current directory
-void printDirectory()
+void printPrompt()
 {
     char dir[1024];
     getcwd(dir, sizeof(dir));
-    printf("\033[01;33m");
+    printf("\033[01;33m"); //change color
     printf("%s", dir);
-    printf("\033[0m");
+    printf("\033[0m"); //reset color
+    printf(" >> ");
 }
 
 
@@ -145,9 +146,7 @@ main(int argc, char *argv[])
         input = fopen(argv[1], "r");
     } else{
         input = stdin;
-        printDirectory();
-        printf(" >> ");
-
+        printPrompt();
     }
 
     while ((nread = getline(&line, &len, input)) != -1) {
@@ -242,8 +241,7 @@ main(int argc, char *argv[])
         }
         free(commandArr);
         if(input == stdin){
-            printDirectory();
-            printf(" >> ");
+            printPrompt();
         }
     }
 
