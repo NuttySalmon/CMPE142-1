@@ -37,7 +37,7 @@ void printPrompt()
     char dir[1024];
     getcwd(dir, sizeof(dir));
     printf("\033[01;33m"); //change color
-    printf("%s", dir);
+    printf("%s", dir);  //print current dir path
     printf("\033[0m"); //reset color
     printf(" >> ");
 }
@@ -192,7 +192,6 @@ main(int argc, char *argv[])
                     close(STDOUT_FILENO); 
                     open(output, O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
                 }
-               // printf("size: %zd", sizeof(arg)/sizeof(char*));
                
                 if(strcmp(arg[0], "exit") == 0){
                     tst_error(); //error if did not exit because more than 0 arguments
@@ -205,23 +204,22 @@ main(int argc, char *argv[])
 
                 //exec
                 else{
-                    
-                    char* wholename;
+                    char* wholename = NULL;
+                    int i;
 
                     //traverse array of paths
-                    for(int i = 0; paths[i] != NULL; i++){
+                    for(i = 0; paths[i] != NULL; i++){
 
-                        //contruct full path of exe
                         wholename = malloc(sizeof(paths[i]) + sizeof(arg[0]) + 2);
                         strcpy(wholename, paths[i]);
                         strcat(wholename,"/");
                         strcat(wholename, arg[0]);
 
-                        if (access(wholename, X_OK) == 0){  //check if execeutable
+                        if (access(wholename, X_OK) == 0){ //check if execeutable
                             execv(wholename,arg);   //run
+                            free(wholename);
                             break;
                         }
-                        
                     }
                     free(wholename);
                 } 
