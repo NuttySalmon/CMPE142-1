@@ -56,12 +56,10 @@ char ** tst_path(char *a[])
 
     while(a[size] != NULL)
     {
-        
-            //execv(wholename);
-            b[bcount] = malloc(strlen(a[size])+1);
-            strcpy(b[bcount], a[size]);
-            bcount++;
-            size++;
+        b[bcount] = malloc(strlen(a[size])+1);
+        strcpy(b[bcount], a[size]);
+        bcount++;
+        size++;
     }
     b[bcount] = NULL;
     return b; //should return char** which is array of strings
@@ -114,6 +112,7 @@ void freeArr(char** s){
     free(s);
 }
 
+
 int
 main(int argc, char *argv[])
 {
@@ -161,9 +160,9 @@ main(int argc, char *argv[])
                 changeDir(arg);     //change directory                
             } 
             else if(strcmp(arg[0], "path") == 0){
-                printf("changing path\n");
                 freeArr(paths);
                 paths = tst_path(arg);   // change path
+                printf("Paths changed");
             } 
             else{
                  child = fork();
@@ -181,13 +180,7 @@ main(int argc, char *argv[])
                
                 if(strcmp(arg[0], "exit") == 0){
                     tst_error(); //error if did not exit because more than 0 arguments
-
-                } else if (strcmp(arg[0], "cd") == 0 ){
-
-                    tst_error();
-
-                } 
-
+                }
                 //exec
                 else{
                     char* wholename = NULL;
@@ -212,15 +205,15 @@ main(int argc, char *argv[])
                         printf("command not found\n");
                     }
                 } 
-                free(arg);
-                free(redir);
-                exit(0);
             }
             else{
-                free(arg);
-                free(redir);
                 procressCount++; //increment no. of process called
             }
+            free(arg);
+            free(redir);
+
+            if(child == 0)
+                exit(0);
         }
 
         for(int i=0; i < commandCount; i++){
