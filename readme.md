@@ -8,8 +8,8 @@ Simple unix shell based on [this](https://github.com/remzi-arpacidusseau/ostep-p
 1. Clone repo and `cd` into folder:
 
     ```
-    git clone https://github.com/NuttySalmon/CMPE142-1.git 
-    cd CMPE142-1
+    git clone https://github.com/NuttySalmon/simple-unix-shell.git
+    cd simple-unix-shell
     ```
 2. Make executable:
 
