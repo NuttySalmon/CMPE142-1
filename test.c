@@ -165,8 +165,10 @@ main(int argc, char *argv[])
             int redirCount = 0;
             //parse redirection
             char **redir = split(commandArr[procressCount], ">", &redirCount); 
+            
 
-            char **arg = split(redir[0], " :\t", NULL); //create array of arg
+            int argCount = 0; // arg count in command
+            char **arg = split(redir[0], " :\t", &argCount); //create array of arg
             int child = -1;
             
             if(strcmp(arg[0], "cd") == 0){
@@ -176,8 +178,6 @@ main(int argc, char *argv[])
                 printf("changing path\n");
                 freeArr(paths);
                 paths = tst_path(arg);   // change path
-                printf("path: %s\n",paths[0]);
-
             } 
             else{
                  child = fork();
@@ -222,12 +222,9 @@ main(int argc, char *argv[])
                         }
                     }
                     free(wholename);
-
-
                     if(paths[i] == NULL){
                         printf("command not found\n");
                     }
-                    
                 } 
                 free(arg);
                 free(redir);
