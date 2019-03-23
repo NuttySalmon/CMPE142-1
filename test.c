@@ -128,8 +128,16 @@ main(int argc, char *argv[])
     paths[1] = NULL;
 
     //check if batch file exists
-    if(access(argv[1], R_OK) == 0){
-        input = fopen(argv[1], "r");
+    if(argv[1] != NULL){
+
+        if(access(argv[1], R_OK) == 0){
+            input = fopen(argv[1], "r");
+        } else {
+            tst_error(); //error if path invalid
+            free(paths);
+            exit(0);
+        }
+
     } else{
         input = stdin;
         printPrompt();
@@ -151,41 +159,45 @@ main(int argc, char *argv[])
             int redirCount = 0;
             //parse redirection
             char **redir = split(commandArr[procressCount], ">", &redirCount); 
-            
+
+            if(redirCount > 2){
+                tst_error();
+                free(redir);
+                continue;
+            }
 
             int argCount = 0; // arg count in command
             char **arg = split(redir[0], " :\t", &argCount); //create array of arg
             int child = -1;
             //printf("%s", arg[0]);
 
-            if (arg[0] == NULL){
-                continue;
+            if (arg[0] != NULL){
+            
+                if(strcmp(arg[0], "cd") == 0){
+                    changeDir(arg);     //change directory                
+                } 
+                else if(strcmp(arg[0], "path") == 0){
+                    freeArr(paths);
+                    paths = tst_path(arg);   // change path
+                    printf("Paths changed");
+                } 
+                else{
+                     child = fork();
+                }
             }
-
-            if(strcmp(arg[0], "cd") == 0){
-                changeDir(arg);     //change directory                
-            } 
-            else if(strcmp(arg[0], "path") == 0){
-                freeArr(paths);
-                paths = tst_path(arg);   // change path
-                printf("Paths changed");
-            } 
-            else{
-                 child = fork();
-            }
-
 
             //child procress
             if(child == 0){
-
+                int ofileCount = 0;
                 if(redirCount == 2){
-                    char * output = removeSpaces(redir[1]);
-                    close(STDOUT_FILENO); 
-                    open(output, O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
+                    char ** output = split(redir[1], " \t", &ofileCount);
+                    close(STDOUT_FILENO);
+                    if(ofileCount == 1)
+                        open(output[0], O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
                 }
                
-                if(strcmp(arg[0], "exit") == 0){
-                    tst_error(); //error if did not exit because more than 0 arguments
+                if(strcmp(arg[0], "exit") == 0 || ofileCount > 1){
+                    tst_error();
                 }
                 //exec
                 else{
