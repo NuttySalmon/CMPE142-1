@@ -145,6 +145,7 @@ main(int argc, char *argv[])
         char **commandArr = split(line, "&\n", &commandCount); //create array of commands
         int procressCount = 0; //number of processes called
 
+        
         //traverse array of commands
         for(int i = 0; i < commandCount; i++){
             int redirCount = 0;
@@ -155,7 +156,12 @@ main(int argc, char *argv[])
             int argCount = 0; // arg count in command
             char **arg = split(redir[0], " :\t", &argCount); //create array of arg
             int child = -1;
-            
+            //printf("%s", arg[0]);
+
+            if (arg[0] == NULL){
+                continue;
+            }
+
             if(strcmp(arg[0], "cd") == 0){
                 changeDir(arg);     //change directory                
             } 
