@@ -1,6 +1,4 @@
-Simple Unix Shell
-
-Based on [this](https://github.com/remzi-arpacidusseau/ostep-projects/tree/master/processes-shell) project prompt.
+Simple Unix Shell. Based on [this](https://github.com/remzi-arpacidusseau/ostep-projects/tree/master/processes-shell) project prompt.
 
 
 ### To build in terminal
