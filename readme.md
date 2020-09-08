@@ -1,7 +1,6 @@
-# CMPE 142 Assingment 1 - Simple Unix Shell
-By Alwin Argono, Chak Hong Chan, and Michelle Natasha
+Simple Unix Shell
 
-Simple unix shell based on [this](https://github.com/remzi-arpacidusseau/ostep-projects/tree/master/processes-shell) project prompt.
+Based on [this](https://github.com/remzi-arpacidusseau/ostep-projects/tree/master/processes-shell) project prompt.
 
 
 ### To build in terminal
